@@ -33,7 +33,7 @@ if (!requireNamespace("remotes", quietly = TRUE)) {
   install.packages("remotes")
 }
 
-remotes::install_github("plantvelocity/PlantVelocity")
+remotes::install_github("PlantVelocityProject/PlantVelocity")
 ```
 
 Required dependencies declared by PlantVelocity are installed automatically by
