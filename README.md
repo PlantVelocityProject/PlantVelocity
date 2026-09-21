@@ -1,6 +1,8 @@
-# PlantVelocity
+# PlantVelocity - Plant RNA velocity analysis with long-read intron-retention priors
 
-**Plant RNA velocity with IR-excluded two-state dynamics**
+<p align="center">
+  <img src="./man/figures/logo.png" width="750">
+</p>
 
 PlantVelocity is an R package for estimating and visualizing RNA velocity in
 plant single-cell transcriptomic data. It provides a workflow for recovering
@@ -57,28 +59,17 @@ pv <- compute_velocity_graph(pv)
 pv <- compute_velocity_embedding(pv, reduction = "umap")
 
 plot_velocity_embedding(pv, reduction = "umap", group_by = "cell_type")
+plot_velocity_stream(pv, reduction = "umap", group_by = "cell_type")
+plot_velocity_embedding_grid(pv, reduction = "umap", group_by = "cell_type")
 ```
-
-## Documentation
-
-Detailed descriptions of functions, parameters, returned objects, and optional
-workflows are available in the R help system:
-
-```r
-help(package = "PlantVelocity")
-?create_plantvelo
-?recover_dynamics
-?plot_velocity_embedding
-```
-
 ## Support
 
-Please report bugs, unexpected behavior, and feature requests through
-[GitHub Issues](https://github.com/plantvelocity/PlantVelocity/issues).
+See the [DOCUMENTATION](https://PlantVelocityProject.github.io/PlantVelocity/) for help getting started.
+Please report bugs, unexpected behavior, and feature requests through [GitHub Issues](https://github.com/PlantVelocityProject/PlantVelocity/issues).
 
 ## Citation
 
 A formal PlantVelocity publication and citation record are forthcoming. Until
 then, please reference the
-[PlantVelocity repository](https://github.com/plantvelocity/PlantVelocity) and
+[PlantVelocity repository](https://github.com/PlantVelocityProject/PlantVelocity) and
 include the software version used in your analysis.

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Installation — PlantVelocity documentation</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="navigation.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <aside class="sidebar" aria-label="Documentation navigation">
+    <div class="brand">
+      <a href="index.html"><img class="brand-logo" src="assets/logo.png" alt="PlantVelocity" width="2172" height="724"></a>
+      <label class="sr-only" for="navigation-search">Search documentation pages</label>
+      <input id="navigation-search" type="search" placeholder="Search documentation…" aria-controls="documentation-nav" autocomplete="off" hidden>
+    </div>
+    <nav id="documentation-nav" aria-label="Documentation">
+      <div class="nav-group">
+        <p class="nav-label">OVERVIEW</p>
+        <a href="index.html">About PlantVelocity</a>
+        <a class="selected" aria-current="page" href="installation.html">Installation</a>
+        <a href="quick-start.html">Quick Start</a>
+        <a href="release-notes.html">Release Notes</a>
+        <a href="reference.html">Reference</a>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">USER GUIDE</p>
+        <a href="data-preparation.html">Data Preparation</a>
+        <a href="rna-velocity-analysis.html">RNA Velocity Analysis</a>
+        <a href="latent-time-terminal-states.html">Latent Time &amp; Terminal States</a>
+        <a href="driver-gene-ranking.html">Driver Gene Ranking</a>
+        <a href="intron-retention-analysis.html">Intron Retention Analysis</a>
+      </div>
+      <p class="search-status" role="status" aria-live="polite" hidden>No matching pages.</p>
+    </nav>
+  </aside>
+  <div class="page">
+    <header class="breadcrumbs"><span><a href="index.html">PlantVelocity</a><span aria-hidden="true"> / </span>Installation</span><a class="source" href="https://github.com/PlantVelocityProject/PlantVelocity">View on GitHub ↗</a></header>
+    <main id="main" tabindex="-1">
+      <h1>Installation<a class="anchor" href="#main" aria-label="Link to Installation">¶</a></h1>
+      <p class="lead">Get started with PlantVelocity for RNA velocity analysis in plant single-cell data.</p>
+      <section id="requirements">
+        <h2>Requirements<a class="anchor" href="#requirements" aria-label="Link to Requirements">¶</a></h2>
+        <p>PlantVelocity declares <strong>R 4.1.0 or later</strong>. Use a recent R release compatible with the versions of Matrix, SeuratObject, and Seurat you install; these dependencies may require a newer R version.</p>
+        <p>Run the R commands below in an R console or RStudio. The package itself does not require compilation, although some dependencies contain compiled code.</p>
+      </section>
+      <section id="github">
+        <h2>Install from GitHub<a class="anchor" href="#github" aria-label="Link to Install from GitHub">¶</a></h2>
+        <p>Install the development version from the <a href="https://github.com/PlantVelocityProject/PlantVelocity">PlantVelocity repository</a> using <code>remotes</code>:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>if (!requireNamespace("remotes", quietly = TRUE)) {
+  install.packages("remotes")
+}
+
+remotes::install_github("PlantVelocityProject/PlantVelocity")</code></pre></div>
+      </section>
+      <section id="dependencies">
+        <h2>Dependencies<a class="anchor" href="#dependencies" aria-label="Link to Dependencies">¶</a></h2>
+        <p>Required dependencies are declared in the package <a href="https://github.com/PlantVelocityProject/PlantVelocity/blob/HEAD/DESCRIPTION">DESCRIPTION</a> file:</p>
+        <ul>
+          <li><code>R6</code> (≥ 2.5.0) — object infrastructure.</li>
+          <li><code>Matrix</code> (≥ 1.5.0) — sparse matrix operations.</li>
+          <li><code>SeuratObject</code> (≥ 5.0.0) — Seurat data structures.</li>
+          <li><code>Seurat</code> (≥ 5.0.0) — creating PlantVelocity objects from Seurat data.</li>
+          <li><code>hdf5r</code> (≥ 1.3.0) — HDF5 / loom file access.</li>
+          <li><code>ggplot2</code> (≥ 3.4.0), <code>scales</code> — visualization.</li>
+          <li><code>ggrastr</code> — rasterized points and arrows in velocity plots.</li>
+          <li><code>RSpectra</code> — sparse eigendecomposition for terminal-state inference.</li>
+          <li><code>patchwork</code> — combined diagnostic and IR plot layouts.</li>
+          <li><code>methods</code>, <code>stats</code>, <code>utils</code>, <code>grid</code> — included with R.</li>
+        </ul>
+        <h3>Optional features</h3>
+        <ul>
+          <li><code>BiocNeighbors</code> — neighbor search with <code>method = &quot;bioc&quot;</code>.</li>
+          <li><code>ggrepel</code> — repelled labels in IR plots.</li>
+          <li><code>testthat</code> (≥ 3.0.0) — package development and testing.</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

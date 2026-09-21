@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore independent intron-retention statistics, cell landscapes, gene rankings and post-hoc associations with RNA velocity dynamics.">
+  <title>Intron Retention Analysis — PlantVelocity documentation</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="navigation.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <aside class="sidebar" aria-label="Documentation navigation">
+    <div class="brand">
+      <a href="index.html"><img class="brand-logo" src="assets/logo.png" alt="PlantVelocity" width="2172" height="724"></a>
+      <label class="sr-only" for="navigation-search">Search documentation pages</label>
+      <input id="navigation-search" type="search" placeholder="Search documentation…" aria-controls="documentation-nav" autocomplete="off" hidden>
+    </div>
+    <nav id="documentation-nav" aria-label="Documentation">
+      <div class="nav-group">
+        <p class="nav-label">OVERVIEW</p>
+        <a href="index.html">About PlantVelocity</a>
+        <a href="installation.html">Installation</a>
+        <a href="quick-start.html">Quick Start</a>
+        <a href="release-notes.html">Release Notes</a>
+        <a href="reference.html">Reference</a>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">USER GUIDE</p>
+        <a href="data-preparation.html">Data Preparation</a>
+        <a href="rna-velocity-analysis.html">RNA Velocity Analysis</a>
+        <a href="latent-time-terminal-states.html">Latent Time &amp; Terminal States</a>
+        <a href="driver-gene-ranking.html">Driver Gene Ranking</a>
+        <a class="selected" aria-current="page" href="intron-retention-analysis.html">Intron Retention Analysis</a>
+      </div>
+      <p class="search-status" role="status" aria-live="polite" hidden>No matching pages.</p>
+    </nav>
+  </aside>
+  <div class="page">
+    <header class="breadcrumbs"><span><a href="index.html">PlantVelocity</a><span aria-hidden="true"> / </span>Intron Retention Analysis</span><a class="source" href="https://github.com/PlantVelocityProject/PlantVelocity">View on GitHub ↗</a></header>
+    <main id="main" tabindex="-1">
+      <h1>Intron Retention Analysis</h1>
+
+      <p class="lead">Explore IR-associated signals at the cell and gene levels, then compare them with the independently inferred RNA velocity dynamics.</p>
+      <section id="before-you-begin">
+        <h2>Before you begin<a class="anchor" href="#before-you-begin" aria-label="Link to Before you begin">¶</a></h2>
+        <p>Use a <code>pv</code> object containing aligned <code>ir</code>, <code>spliced</code> and <code>unspliced</code> count layers. The optional <code>layers/retained</code> field in the loom file is imported as <code>pv@layers$ir</code>; see <a href="data-preparation.html">Data Preparation</a>.</p>
+        <p>Basic IR statistics do not require kinetic fitting. Embedding plots require an existing UMAP reduction. The heatmap and trend plots require <a href="latent-time-terminal-states.html">latent time</a>, and the driver-association plot requires results from <a href="driver-gene-ranking.html">Driver Gene Ranking</a>.</p>
+        <p>IR-associated counts are analysed separately and do not enter the two-state kinetic model.</p>
+      </section>
+      <section id="compute-statistics">
+        <h2>Compute IR statistics<a class="anchor" href="#compute-statistics" aria-label="Link to Compute IR statistics">¶</a></h2>
+        <p>Compute descriptive metrics from the IR count layer:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>ir_stats &lt;- compute_ir_stats(pv)</code></pre></div>
+        <p>The function returns a standalone <code>plantvelo_ir_stats</code> object. It does not modify <code>pv</code> or its fitted dynamics.</p>
+        <ul>
+          <li><code>min_cells</code> sets the minimum number of cells with positive IR counts for a gene. By default, it is the larger of 10 cells and 1% of all cells, rounded up.</li>
+          <li><code>min_total_count</code> sets the minimum total IR count per gene; the default is 20.</li>
+          <li><code>scale_factor</code> sets the library-size normalization scale; the default is 10,000.</li>
+        </ul>
+        <p>IR fractions use IR counts divided by the sum of IR, spliced and unspliced counts. Normalized IR abundance uses the same cell-level library totals, followed by scaling and <code>log1p</code> transformation.</p>
+        <p>Inspect the cell- and gene-level summaries:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>head(ir_stats$cell_metrics)
+head(ir_stats$gene_metrics)</code></pre></div>
+        <p><code>ir_stats$normalized_ir</code> contains the sparse normalized IR matrix for genes passing the filters. Cell-level IR depth, fractions and detected-gene counts use all input genes; normalized burden is averaged over retained genes.</p>
+      </section>
+      <section id="signal-qc">
+        <h2>Inspect IR signal quality<a class="anchor" href="#signal-qc" aria-label="Link to Inspect IR signal quality">¶</a></h2>
+        <p>Examine sequencing-depth dependence and signal coverage before interpreting biological patterns:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>plot_ir_qc(pv, ir_stats)</code></pre></div>
+        <figure class="velocity-figure"><img src="assets/ir_qc.png" alt="Overview of IR signal depth dependence, sparsity, prevalence and fractions." loading="lazy"><figcaption>Overview of IR signal depth dependence, sparsity, prevalence and fractions.</figcaption></figure>
+        <ul>
+          <li><strong>Depth dependence</strong> compares total IR signal with total RNA counts per cell.</li>
+          <li><strong>Cell-level sparsity</strong> shows the number of genes with detected IR signal per cell.</li>
+          <li><strong>Gene-level prevalence</strong> relates detection rate to mean normalized IR abundance.</li>
+          <li><strong>Cell-level fraction</strong> shows the distribution of IR signal fractions.</li>
+        </ul>
+      </section>
+      <section id="cell-landscape">
+        <h2>Visualize the cell-level IR landscape<a class="anchor" href="#cell-landscape" aria-label="Link to Visualize the cell-level IR landscape">¶</a></h2>
+        <p>Map IR metrics onto the existing UMAP embedding:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>plot_ir_cell_landscape(pv, ir_stats, reduction = "umap")</code></pre></div>
+        <figure class="velocity-figure"><img src="assets/ir_cell.png" style="max-width: 59.5%;" alt="Cell-level IR signal fraction, normalized burden and detected IR genes." loading="lazy"><figcaption>Cell-level IR signal fraction, normalized burden and detected IR genes.</figcaption></figure>
+        <ul>
+          <li><strong>IR signal fraction</strong> is the fraction of total counts assigned to the IR layer.</li>
+          <li><strong>Normalized IR burden</strong> is the mean normalized IR abundance across retained genes.</li>
+          <li><strong>Detected IR genes</strong> counts genes with positive IR signal in each cell.</li>
+        </ul>
+        <p>These plots display descriptive IR metrics without velocity arrows.</p>
+      </section>
+      <section id="gene-ranking">
+        <h2>Rank IR-associated genes<a class="anchor" href="#gene-ranking" aria-label="Link to Rank IR-associated genes">¶</a></h2>
+        <p>Display the top IR-associated genes ranked by gene-level IR signal fraction:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>plot_ir_gene_association(pv, ir_stats, plot_type = "ranking")</code></pre></div>
+        <figure class="velocity-figure"><img src="assets/ir_ranking.png" style="max-width: 59.5%;" alt="Top IR-associated genes ranked by gene-level IR signal fraction." loading="lazy"><figcaption>Top IR-associated genes ranked by gene-level IR signal fraction.</figcaption></figure>
+        <p>The horizontal position represents IR fraction, point colour indicates detection rate, and point size indicates total IR counts. By default, <code>n_top = 20</code>. Supply <code>genes</code> to display specific identifiers from <code>ir_stats$genes</code>.</p>
+        <p>This ranking describes IR-associated signal and is distinct from the velocity-coherence ranking.</p>
+      </section>
+      <section id="latent-time-association">
+        <h2>Explore IR signals across latent time<a class="anchor" href="#latent-time-association" aria-label="Link to Explore IR signals across latent time">¶</a></h2>
+        <p>These plots use the existing <code>pv@meta.data$latent_time</code> values. Complete <a href="latent-time-terminal-states.html">Latent Time &amp; Terminal States</a> first if latent time has not been computed.</p>
+        <h3>Latent-time heatmap</h3>
+        <div class="code-block"><span class="language">R</span><pre><code>plot_ir_gene_association(pv, ir_stats, plot_type = "heatmap")</code></pre></div>
+        <figure class="velocity-figure"><img src="assets/ir_heatmap.png" style="max-width: 59.5%;" alt="Mean normalized IR signal across latent-time bins, standardized within each gene." loading="lazy"><figcaption>Mean normalized IR signal across latent-time bins, standardized within each gene.</figcaption></figure>
+        <p>Cells are grouped into latent-time bins, and mean normalized IR signals are standardized within each gene. Colours show relative changes along latent time, rather than absolute abundance differences between genes.</p>
+        <h3>Gene-wise trends</h3>
+        <div class="code-block"><span class="language">R</span><pre><code>plot_ir_gene_association(pv, ir_stats, plot_type = "trend")</code></pre></div>
+        <figure class="velocity-figure"><img src="assets/ir_trend.png" alt="Gene-wise normalized IR signals and binned trends along latent time." loading="lazy"><figcaption>Gene-wise normalized IR signals and binned trends along latent time.</figcaption></figure>
+        <p>Points show cell-level normalized IR signals, and lines summarize the binned trends. <code>latent_bins</code> controls the number of bins and defaults to 20. <code>n_top</code> defaults to 20; use <code>genes</code> to focus on selected genes.</p>
+      </section>
+      <section id="driver-association">
+        <h2>Compare IR signals with velocity-driver scores<a class="anchor" href="#driver-association" aria-label="Link to Compare IR signals with velocity-driver scores">¶</a></h2>
+        <p>After completing <a href="driver-gene-ranking.html">Driver Gene Ranking</a>, compare IR fractions with the stored velocity-coherence scores:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>plot_ir_gene_association(pv, ir_stats, plot_type = "driver")</code></pre></div>
+        <figure class="velocity-figure"><img src="assets/ir_driver.png" style="max-width: 59.5%;" alt="Post-hoc association between velocity coherence and gene-level IR signal fraction." loading="lazy"><figcaption>Post-hoc association between velocity coherence and gene-level IR signal fraction.</figcaption></figure>
+        <p>Each point represents a gene shared by the IR statistics and driver-ranking results. The horizontal axis shows velocity coherence, the vertical axis shows gene-level IR fraction, and point colour represents fitted likelihood.</p>
+        <p>This is a descriptive association with an independently fitted velocity model. It does not make IR a component of the inferred velocity field.</p>
+      </section>
+      <section id="interpretation">
+        <h2>Interpret the results<a class="anchor" href="#interpretation" aria-label="Link to Interpret the results">¶</a></h2>
+        <p>Interpret IR-associated signals alongside sequencing depth, detection rates and cell annotations. These gene-level fractions summarize counts assigned to the IR layer; they are not event-level intron-retention percentages.</p>
+        <p>Latent-time patterns and driver-score associations are post-hoc summaries, not evidence that IR causes a change in cell state. Use the linked <a href="rna-velocity-analysis.html">RNA Velocity Analysis</a> results and gene phase portraits to examine the corresponding transcriptional dynamics.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

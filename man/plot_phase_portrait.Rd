@@ -14,7 +14,7 @@ plot_phase_portrait(
   n_curve = 300L,
   input_color = NULL,
   fit_color = "grey30",
-  point_size = 2,
+  point_size = 1,
   alpha = 0.7,
   title = NULL,
   legend = TRUE

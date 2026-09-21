@@ -1,13 +1,10 @@
 Package: PlantVelocity
-Title: Plant RNA Velocity with IR-Excluded Two-State Dynamics
-Version: 0.5.0
-Authors@R: person("PlantVelocity Team", role = c("aut", "cre"),
-                   email = "plantvelocity@example.com")
-Description: PlantVelocity provides RNA velocity analysis for plant
-    single-cell data using an intron-excluded two-state model of unspliced and
-    spliced RNA. An independent intron-retention signal can be imported and
-    smoothed for future statistical analysis but is excluded from dynamics
-    recovery and velocity computation.
+Title: Plant RNA Velocity Analysis with Long-Read Intron Retention Priors
+Version: 0.5.1
+Description: Estimates and visualizes RNA velocity in plant single-cell
+    data using a two-state model of unspliced and spliced RNA, with
+    intron-retention-associated signals excluded from velocity inference
+    and analyzed separately through descriptive statistics and visualization.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -19,22 +16,23 @@ Imports:
     methods,
     stats,
     utils,
+    grid,
     ggplot2 (>= 3.4.0),
     scales,
     SeuratObject (>= 5.0.0),
-    hdf5r (>= 1.3.0)
+    Seurat (>= 5.0.0),
+    hdf5r (>= 1.3.0),
+    ggrastr,
+    RSpectra,
+    patchwork
 Suggests:
     testthat (>= 3.0.0),
-    Seurat (>= 5.0.0),
     BiocNeighbors,
-    RSpectra,
-    ggrastr,
-    ggrepel,
-    patchwork
+    ggrepel
 URL: https://github.com/plantvelocity/PlantVelocity
 BugReports: https://github.com/plantvelocity/PlantVelocity/issues
 Config/roxygen2/version: 8.0.0
 NeedsCompilation: no
-Packaged: 2026-07-27 13:56:22 UTC; jdluttzxr
+Packaged: 2026-09-21 16:56:22 UTC; jdluttzxr
 Author: Xiangrong Zhu, College of the Environment and Ecology. Xiamen University
 Maintainer: Xiangrong Zhu, <jdluttzxr@gmail.com>

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Infer root cells, end points and shared latent time from PlantVelocity dynamics.">
+  <title>Latent Time &amp; Terminal States — PlantVelocity documentation</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="navigation.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <aside class="sidebar" aria-label="Documentation navigation">
+    <div class="brand">
+      <a href="index.html"><img class="brand-logo" src="assets/logo.png" alt="PlantVelocity" width="2172" height="724"></a>
+      <label class="sr-only" for="navigation-search">Search documentation pages</label>
+      <input id="navigation-search" type="search" placeholder="Search documentation…" aria-controls="documentation-nav" autocomplete="off" hidden>
+    </div>
+    <nav id="documentation-nav" aria-label="Documentation">
+      <div class="nav-group">
+        <p class="nav-label">OVERVIEW</p>
+        <a href="index.html">About PlantVelocity</a>
+        <a href="installation.html">Installation</a>
+        <a href="quick-start.html">Quick Start</a>
+        <a href="release-notes.html">Release Notes</a>
+        <a href="reference.html">Reference</a>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">USER GUIDE</p>
+        <a href="data-preparation.html">Data Preparation</a>
+        <a href="rna-velocity-analysis.html">RNA Velocity Analysis</a>
+        <a class="selected" aria-current="page" href="latent-time-terminal-states.html">Latent Time &amp; Terminal States</a>
+        <a href="driver-gene-ranking.html">Driver Gene Ranking</a>
+        <a href="intron-retention-analysis.html">Intron Retention Analysis</a>
+      </div>
+      <p class="search-status" role="status" aria-live="polite" hidden>No matching pages.</p>
+    </nav>
+  </aside>
+  <div class="page">
+    <header class="breadcrumbs"><span><a href="index.html">PlantVelocity</a><span aria-hidden="true"> / </span>Latent Time &amp; Terminal States</span><a class="source" href="https://github.com/PlantVelocityProject/PlantVelocity">View on GitHub ↗</a></header>
+    <main id="main" tabindex="-1">
+      <h1>Latent Time &amp; Terminal States</h1>
+      <p class="lead">Identify candidate root cells and end points from the velocity graph, then integrate gene-wise fitted times into a shared latent-time axis.</p>
+
+      <section id="before-you-begin">
+        <h2>Before you begin<a class="anchor" href="#before-you-begin" aria-label="Link to Before you begin">¶</a></h2>
+        <p>Start with the <code>pv</code> object from <a href="rna-velocity-analysis.html">RNA Velocity Analysis</a>, after completing dynamics recovery, velocity computation and velocity graph construction.</p>
+        <p>The examples use an existing <code>umap</code> embedding. Cell colours display the inferred scores or latent time, with velocity arrows hidden.</p>
+      </section>
+
+      <section id="terminal-states">
+        <h2>Infer root cells and end points<a class="anchor" href="#terminal-states" aria-label="Link to Infer root cells and end points">¶</a></h2>
+        <p>Estimate root-cell and end-point scores from the velocity transition graph:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>pv &lt;- compute_terminal_states(pv)</code></pre></div>
+        <p>The results are stored in the cell metadata:</p>
+        <ul>
+          <li><code>root_cells</code> — relative support for cells being near the beginning of the inferred dynamics.</li>
+          <li><code>end_points</code> — relative support for cells being near terminal regions of the inferred dynamics.</li>
+        </ul>
+        <p>Both scores range from 0 to 1. They describe continuous support rather than assigning each cell a discrete root or terminal-state label.</p>
+        <h3>Root cells</h3>
+        <p>Visualize the root-cell scores:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>plot_velocity_embedding(pv, reduction = "umap", group_by = "root_cells", show_arrows = FALSE)</code></pre></div>
+        <figure class="velocity-figure"><img style="max-width: 59.5%;" src="assets/root_cells.png" alt="UMAP embedding coloured by inferred root-cell scores." loading="lazy"><figcaption>Root-cell scores across the UMAP embedding.</figcaption></figure>
+        <p>Higher scores highlight candidate starting regions in the velocity graph.</p>
+        <h3>End points</h3>
+        <p>Visualize the end-point scores:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>plot_velocity_embedding(pv, reduction = "umap", group_by = "end_points", show_arrows = FALSE)</code></pre></div>
+        <figure class="velocity-figure"><img style="max-width: 59.5%;" src="assets/end_points.png" alt="UMAP embedding coloured by inferred end-point scores." loading="lazy"><figcaption>End-point scores across the UMAP embedding.</figcaption></figure>
+        <p>Higher scores highlight candidate terminal regions. Interpret these regions alongside cell annotations and the velocity field.</p>
+      </section>
+
+      <section id="latent-time">
+        <h2>Compute latent time<a class="anchor" href="#latent-time" aria-label="Link to Compute latent time">¶</a></h2>
+        <p>Combine gene-wise fitted times into a shared temporal ordering:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>pv &lt;- compute_latent_time(pv, min_likelihood = 0.1)</code></pre></div>
+        <p>The function uses fitted gene times and automatically searches for root-cell information, including the <code>root_cells</code> scores computed above. The resulting values are stored in <code>pv@meta.data$latent_time</code>.</p>
+        <ul>
+          <li><code>min_likelihood</code> controls the fitted-likelihood threshold used to select genes for time integration. If fewer than two genes pass filtering, the current implementation falls back to genes with complete fitted times and issues a warning.</li>
+          <li><code>min_confidence</code> controls the local-consistency threshold used during neighbourhood-based correction. Its default value is <code>0.75</code>.</li>
+          <li>By default, latent time is normalized to the interval from 0 to 1.</li>
+        </ul>
+        <h3>Visualize latent time</h3>
+        <div class="code-block"><span class="language">R</span><pre><code>plot_velocity_embedding(pv, reduction = "umap", group_by = "latent_time", show_arrows = FALSE)</code></pre></div>
+        <figure class="velocity-figure"><img style="max-width: 59.5%;" src="assets/latent_time.png" alt="UMAP embedding coloured by inferred latent time." loading="lazy"><figcaption>Shared latent time across the UMAP embedding.</figcaption></figure>
+        <p>Lower values represent earlier positions and higher values represent later positions along the inferred temporal ordering. Latent time is a relative model-derived coordinate, not elapsed time in hours or days.</p>
+        <h3>Specify root and end-point information</h3>
+        <p>To explicitly use the inferred root scores and add end-point scores as a weak temporal prior:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>pv &lt;- compute_latent_time(pv, min_likelihood = 0.1, root_key = "root_cells", end_key = "end_points")</code></pre></div>
+        <ul>
+          <li><code>root_key</code> specifies the metadata column used to identify candidate root cells.</li>
+          <li><code>end_key</code> specifies the metadata column used as a weak end-point prior. This constraint is optional and is not applied by the basic call above.</li>
+        </ul>
+        <p>This call updates the latent-time values in <code>pv</code>.</p>
+      </section>
+
+      <section id="inspect-results">
+        <h2>Inspect the results<a class="anchor" href="#inspect-results" aria-label="Link to Inspect the results">¶</a></h2>
+        <p>Review the inferred values for individual cells:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>head(pv@meta.data[, c("root_cells", "end_points", "latent_time")])</code></pre></div>
+        <p>Compare their distributions:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>summary(pv@meta.data[, c("root_cells", "end_points", "latent_time")])</code></pre></div>
+        <p>Assess whether the inferred starting regions, terminal regions and temporal ordering agree with the cell annotations, velocity directions and gene phase portraits. These results describe inferred transcriptional dynamics and do not directly establish cell ancestry.</p>
+      </section>
+
+      <section id="next-steps">
+        <h2>Continue to driver-gene ranking<a class="anchor" href="#next-steps" aria-label="Link to Continue to driver-gene ranking">¶</a></h2>
+        <p>Continue with <a href="driver-gene-ranking.html">Driver Gene Ranking</a> to explore genes associated with the inferred dynamics.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

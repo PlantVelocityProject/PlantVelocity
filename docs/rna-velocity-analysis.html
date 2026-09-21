@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Construct a neighbour graph, compute expression moments, fit gene-wise dynamics and infer RNA velocity with PlantVelocity.">
+  <title>RNA Velocity Analysis — PlantVelocity documentation</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="navigation.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <aside class="sidebar" aria-label="Documentation navigation">
+    <div class="brand">
+      <a href="index.html"><img class="brand-logo" src="assets/logo.png" alt="PlantVelocity" width="2172" height="724"></a>
+      <label class="sr-only" for="navigation-search">Search documentation pages</label>
+      <input id="navigation-search" type="search" placeholder="Search documentation…" aria-controls="documentation-nav" autocomplete="off" hidden>
+    </div>
+    <nav id="documentation-nav" aria-label="Documentation">
+      <div class="nav-group">
+        <p class="nav-label">OVERVIEW</p>
+        <a href="index.html">About PlantVelocity</a>
+        <a href="installation.html">Installation</a>
+        <a href="quick-start.html">Quick Start</a>
+        <a href="release-notes.html">Release Notes</a>
+        <a href="reference.html">Reference</a>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">USER GUIDE</p>
+        <a href="data-preparation.html">Data Preparation</a>
+        <a class="selected" aria-current="page" href="rna-velocity-analysis.html">RNA Velocity Analysis</a>
+        <a href="latent-time-terminal-states.html">Latent Time &amp; Terminal States</a>
+        <a href="driver-gene-ranking.html">Driver Gene Ranking</a>
+        <a href="intron-retention-analysis.html">Intron Retention Analysis</a>
+      </div>
+      <p class="search-status" role="status" aria-live="polite" hidden>No matching pages.</p>
+    </nav>
+  </aside>
+  <div class="page">
+    <header class="breadcrumbs"><span><a href="index.html">PlantVelocity</a><span aria-hidden="true"> / </span>RNA Velocity Analysis</span><a class="source" href="https://github.com/PlantVelocityProject/PlantVelocity">View on GitHub ↗</a></header>
+    <main id="main" tabindex="-1">
+      <h1>RNA Velocity Analysis</h1>
+      <p class="lead">Infer RNA velocity from the aligned spliced and unspliced count layers in a <code>plantvelo</code> object. This workflow constructs a neighbourhood graph, computes expression moments, fits gene-wise dynamics and builds a directed velocity graph. Inspect the fitted model with diagnostics, velocity-field plots and gene phase portraits.</p>
+
+      <section id="before-you-begin">
+        <h2>Before you begin<a class="anchor" href="#before-you-begin" aria-label="Link to Before you begin">¶</a></h2>
+        <p>Start with the <code>pv</code> object created in <a href="data-preparation.html">Data Preparation</a>. It should contain spliced and unspliced count layers and a PCA reduction inherited from Seurat.</p>
+        <p>For IR-aware analysis, prior-based count correction should already have been performed upstream. IR-associated counts, when available, remain separate from the two-state velocity model.</p>
+      </section>
+
+      <section id="build-neighbour-graph">
+        <h2>Build the neighbour graph<a class="anchor" href="#build-neighbour-graph" aria-label="Link to Build the neighbour graph">¶</a></h2>
+        <p>Construct a nearest-neighbour graph using the PCA representation:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>pv &lt;- build_neighbor_graph(pv, n_neighbors = 30, n_pcs = 30)</code></pre></div>
+        <ul>
+          <li><code>n_neighbors</code> controls the number of nearest neighbours used to construct the graph.</li>
+          <li><code>n_pcs</code> controls the number of available principal components used to calculate cell distances.</li>
+        </ul>
+        <p>The graph describes local relationships between cells and provides the neighbourhood information used for expression smoothing.</p>
+      </section>
+
+      <section id="compute-moments">
+        <h2>Compute expression moments<a class="anchor" href="#compute-moments" aria-label="Link to Compute expression moments">¶</a></h2>
+        <p>Smooth the count layers across neighbouring cells:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>pv &lt;- compute_moments(pv)</code></pre></div>
+        <p>This step produces:</p>
+        <ul>
+          <li><code>Ms</code> — smoothed spliced counts.</li>
+          <li><code>Mu</code> — smoothed unspliced counts.</li>
+          <li><code>Mr</code> — smoothed IR-associated counts, when the <code>ir</code> layer is available.</li>
+        </ul>
+        <p><code>Ms</code> and <code>Mu</code> are used for kinetic fitting. <code>Mr</code> is retained for independent intron-retention analysis and does not contribute to velocity inference.</p>
+      </section>
+
+      <section id="recover-dynamics">
+        <h2>Recover gene-wise dynamics<a class="anchor" href="#recover-dynamics" aria-label="Link to Recover gene-wise dynamics">¶</a></h2>
+        <p>Fit the two-state kinetic model independently for selected genes:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>pv &lt;- recover_dynamics(pv, n_top_genes = 2000)</code></pre></div>
+        <p>The model estimates transcription, splicing and degradation parameters from the spliced and unspliced expression moments.</p>
+        <p>When <code>genes</code> is not specified, the current implementation selects up to <code>n_top_genes</code> genes ranked by mean spliced expression. With the default smoothed workflow, this ranking uses <code>Ms</code>.</p>
+        <p>To fit a specific set of genes, provide their identifiers:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>pv &lt;- recover_dynamics(pv, genes = genes_to_fit)</code></pre></div>
+        <p>Here, <code>genes_to_fit</code> is a character vector whose identifiers match the feature names used to construct <code>pv</code>: Gene_ID when imported with <code>loom_gene_attr = "Accession"</code>, or Gene_symbol when imported with <code>loom_gene_attr = "Gene"</code>.</p>
+        <p>Fitting results are stored in <code>pv@kinetics$params</code>. Inspect the fitted parameters and status counts:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>head(pv@kinetics$params)
+table(pv@kinetics$params$fit_model)</code></pre></div>
+        <p>The <code>fit_model</code> column records <code>"fitted"</code> or <code>"unfitted"</code>. Genes that were not selected or could not be fitted remain marked as <code>"unfitted"</code>.</p>
+      </section>
+
+      <section id="compute-velocity">
+        <h2>Compute RNA velocity<a class="anchor" href="#compute-velocity" aria-label="Link to Compute RNA velocity">¶</a></h2>
+        <p>Calculate RNA velocity from the fitted dynamics:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>pv &lt;- compute_velocity(pv, mode = "dynamical")</code></pre></div>
+        <p>This step produces spliced velocity in <code>pv@layers$velocity</code> and unspliced velocity in <code>pv@layers$velocity_u</code>.</p>
+        <p>Genes passing the fitted-likelihood threshold and internal scaling filters are marked in <code>pv@velocity$genes</code>. The default <code>min_likelihood</code> is <code>0.001</code>.</p>
+        <p>Inspect the number of selected velocity genes:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>sum(pv@velocity$genes, na.rm = TRUE)</code></pre></div>
+      </section>
+
+      <section id="build-velocity-graph">
+        <h2>Build the velocity graph<a class="anchor" href="#build-velocity-graph" aria-label="Link to Build the velocity graph">¶</a></h2>
+        <p>Compare each cell’s velocity vector with expression differences to neighbouring cells:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>pv &lt;- compute_velocity_graph(pv)</code></pre></div>
+        <p>By default, graph construction uses the selected velocity genes and smoothed spliced expression (<code>Ms</code>). It considers both first- and second-order neighbours.</p>
+        <p>Positive and negative directional similarities are stored separately in <code>pv@graphs$velocity_graph</code> and <code>pv@graphs$velocity_graph_neg</code>. These graphs support downstream velocity projection and transition analysis.</p>
+      </section>
+
+      <section id="fit-diagnostics">
+        <h2>Fit diagnostics<a class="anchor" href="#fit-diagnostics" aria-label="Link to Fit diagnostics">¶</a></h2>
+        <p>Inspect the fitted dynamics and the genes retained for velocity analysis:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>plot_diagnostics(pv)</code></pre></div>
+        <figure class="velocity-figure"><img src="assets/diagnostics_plot.png" alt="Four-panel diagnostic plot showing likelihoods, gene counts, fitted time versus latent time, and top fitted genes." loading="lazy"><figcaption>Example diagnostics for the fitted RNA velocity model.</figcaption></figure>
+        <ul>
+          <li><strong>Likelihood distribution</strong> summarizes fitted gene likelihoods.</li>
+          <li><strong>Gene filter summary</strong> compares total, fitted and selected velocity gene counts.</li>
+          <li><strong>Fitted time vs. latent time</strong> compares each cell’s mean fitted time across velocity genes with its latent time.</li>
+          <li><strong>Top fitted genes</strong> shows the genes with the highest fitted likelihoods.</li>
+        </ul>
+      </section>
+
+      <section id="stream-plot">
+        <h2>Visualize the velocity field<a class="anchor" href="#stream-plot" aria-label="Link to Visualize the velocity field">¶</a></h2>
+        <p>Project velocity onto the UMAP embedding:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>pv &lt;- compute_velocity_embedding(pv, reduction = "umap")</code></pre></div>
+        <p>The supplied example figures retain their original colours; results drawn with the code below use the package defaults.</p>
+        <h3>Cell-level arrows</h3>
+        <p>Display projected velocity vectors at individual cell positions. Set <code>group_by</code> to a metadata column in your object; the examples use <code>cell_type</code> and the default plotting colours.</p>
+        <div class="code-block"><span class="language">R</span><pre><code>plot_velocity_embedding(pv, reduction = "umap", group_by = "cell_type")</code></pre></div>
+        <figure class="velocity-figure"><img src="assets/cell_type.velocity_plot.png" alt="Cell-level velocity arrows on UMAP coloured by cell type." loading="lazy"><figcaption>Example cell-level velocity plot coloured by cell type.</figcaption></figure>
+        <p><code>density</code> controls the fraction of valid, non-zero cell vectors displayed as arrows. Its default value of <code>0.1</code> displays approximately 10% of these vectors.</p>
+        <h3>Grid arrows</h3>
+        <p>Summarize local velocity directions with arrows on a regular grid:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>plot_velocity_embedding_grid(pv, reduction = "umap", group_by = "cell_type")</code></pre></div>
+        <figure class="velocity-figure"><img src="assets/cell_type.velocity_grid.png" alt="Grid velocity arrows over a UMAP embedding coloured by cell type." loading="lazy"><figcaption>Example grid plot showing locally averaged velocity directions.</figcaption></figure>
+        <ul>
+          <li><code>n_grid</code> sets the number of grid positions along each axis.</li>
+          <li><code>smooth</code> controls the interpolation bandwidth.</li>
+          <li><code>min_mass</code> controls the velocity-strength mask.</li>
+          <li><code>cutoff_perc</code> controls the local-length mask.</li>
+        </ul>
+        <h3>Stream plot</h3>
+        <div class="code-block"><span class="language">R</span><pre><code>plot_velocity_stream(pv, reduction = "umap", group_by = "cell_type")</code></pre></div>
+        <figure class="velocity-figure"><img src="assets/cell_type.velocity_stream.png" alt="UMAP velocity stream plot coloured by named Arabidopsis root cell types." loading="lazy"><figcaption>Example velocity stream plot coloured by cell type.</figcaption></figure>
+        <ul>
+          <li><code>min_mass</code> controls the velocity-strength mask.</li>
+          <li><code>point_size</code> adjusts the background cell points.</li>
+          <li><code>arrow_size</code> controls arrowhead size.</li>
+          <li><code>stream_linewidth</code> sets the upper bound of the stream-line width range.</li>
+          <li><code>raster_points = FALSE</code> keeps cell points as vector elements in the plot.</li>
+        </ul>
+        <p>Streamlines summarize the interpolated velocity field and are not tracked trajectories of individual cells.</p>
+      </section>
+
+      <section id="phase-portraits">
+        <h2>Gene phase portraits<a class="anchor" href="#phase-portraits" aria-label="Link to Gene phase portraits">¶</a></h2>
+        <p>Inspect the relationship between spliced and unspliced expression for an individual gene and overlay its fitted kinetic curve. The examples use <code>AT1G20450</code>, which must be present in the object and have fitted dynamics.</p>
+        <p>Use a Gene_ID when the object was created with <code>loom_gene_attr = "Accession"</code>, or the matching Gene_symbol when it was created with <code>loom_gene_attr = "Gene"</code>. By default, phase portraits use the smoothed expression moments <code>Ms</code> and <code>Mu</code>.</p>
+        <h3>Colour by kinetic state</h3>
+        <div class="code-block"><span class="language">R</span><pre><code>plot_phase_portrait(pv, gene = "AT1G20450", group_by = "state", show_fit = TRUE)</code></pre></div>
+        <p><code>state</code> distinguishes the gene’s fitted induction and repression states. <code>show_fit = TRUE</code> overlays the fitted kinetic curve.</p>
+        <figure class="velocity-figure"><img src="assets/state.portrait.png" style="max-width: 55.25%;" alt="AT1G20450 spliced-versus-unspliced phase portrait coloured by induction and repression state." loading="lazy"><figcaption>Phase portrait coloured by fitted kinetic state.</figcaption></figure>
+        <h3>Colour by latent time</h3>
+        <div class="code-block"><span class="language">R</span><pre><code>plot_phase_portrait(pv, gene = "AT1G20450", group_by = "latent_time", show_fit = TRUE)</code></pre></div>
+        <p>Colour cells by the latent time computed earlier to compare their temporal ordering with the gene’s expression dynamics.</p>
+        <figure class="velocity-figure"><img src="assets/latent_time.portrait.png" style="max-width: 55.25%;" alt="AT1G20450 phase portrait with a continuous latent-time colour scale." loading="lazy"><figcaption>Phase portrait coloured by latent time.</figcaption></figure>
+        <h3>Colour by cell type</h3>
+        <div class="code-block"><span class="language">R</span><pre><code>plot_phase_portrait(pv, gene = "AT1G20450", group_by = "cell_type", show_fit = TRUE)</code></pre></div>
+        <p>Colour cells by their metadata annotation to relate the gene’s expression pattern to the populations shown in the velocity field.</p>
+        <figure class="velocity-figure"><img src="assets/cell_type.portrait.png" alt="AT1G20450 phase portrait coloured by named root cell types." loading="lazy"><figcaption>Phase portrait coloured by cell type.</figcaption></figure>
+      </section>
+
+      <section id="next-steps">
+        <h2>Continue to latent time and terminal states<a class="anchor" href="#next-steps" aria-label="Link to Continue to latent time and terminal states">¶</a></h2>
+        <p>Continue with <a href="latent-time-terminal-states.html">Latent Time &amp; Terminal States</a> to learn how temporal ordering and root-cell and end-point scores are inferred.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

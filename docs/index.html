@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PlantVelocity uses species-specific long-read intron-retention priors to correct plant single-cell RNA velocity inputs before two-state kinetic modelling.">
+  <title>About PlantVelocity — PlantVelocity documentation</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="navigation.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <aside class="sidebar" aria-label="Documentation navigation">
+    <div class="brand">
+      <a href="index.html"><img class="brand-logo" src="assets/logo.png" alt="PlantVelocity" width="2172" height="724"></a>
+      <label class="sr-only" for="navigation-search">Search documentation pages</label>
+      <input id="navigation-search" type="search" placeholder="Search documentation…" aria-controls="documentation-nav" autocomplete="off" hidden>
+    </div>
+    <nav id="documentation-nav" aria-label="Documentation">
+      <div class="nav-group">
+        <p class="nav-label">OVERVIEW</p>
+        <a class="selected" aria-current="page" href="index.html">About PlantVelocity</a>
+        <a href="installation.html">Installation</a>
+        <a href="quick-start.html">Quick Start</a>
+        <a href="release-notes.html">Release Notes</a>
+        <a href="reference.html">Reference</a>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">USER GUIDE</p>
+        <a href="data-preparation.html">Data Preparation</a>
+        <a href="rna-velocity-analysis.html">RNA Velocity Analysis</a>
+        <a href="latent-time-terminal-states.html">Latent Time &amp; Terminal States</a>
+        <a href="driver-gene-ranking.html">Driver Gene Ranking</a>
+        <a href="intron-retention-analysis.html">Intron Retention Analysis</a>
+      </div>
+      <p class="search-status" role="status" aria-live="polite" hidden>No matching pages.</p>
+    </nav>
+  </aside>
+  <div class="page">
+    <header class="breadcrumbs"><span><a href="index.html">PlantVelocity</a><span aria-hidden="true"> / </span>About PlantVelocity</span><a class="source" href="https://github.com/PlantVelocityProject/PlantVelocity">View on GitHub ↗</a></header>
+    <main id="main" tabindex="-1">
+      <h1>About PlantVelocity</h1>
+      <!-- Content adapted from the author-provided manuscript
+           2026.9.15-PlantVelocity-English.docx: Abstract, Introduction,
+           framework description, five-species resource, and Discussion.
+           Resource coverage and application results describe the manuscript study. -->
+      <p>PlantVelocity is a framework for investigating the direction of cell-state changes in plant single-cell transcriptomic data. It uses species-specific long-read intron-retention (IR) priors to identify and exclude potential IR-associated signals before fitting a conventional two-state RNA velocity model.</p>
+      <p>RNA velocity estimates expression changes from the relative abundance of unspliced and spliced RNA. In plants, widespread intron retention can complicate this interpretation: intronic reads may originate from nascent RNA undergoing splicing or from transcripts with retained introns. Short reads often lack the surrounding splicing context needed to distinguish these sources.</p>
+      <p>PlantVelocity uses long-read transcript structures as independent evidence to guide molecular classification. The correction acts on the input counts, before neighbourhood smoothing and kinetic modelling. The IR prior does not add a kinetic state or prescribe the direction of cell-state transitions.</p>
+
+      <section id="workflow">
+        <h2>How PlantVelocity works<a class="anchor" href="#workflow" aria-label="Link to How PlantVelocity works">¶</a></h2>
+        <p>The workflow connects prior-guided molecular classification with RNA velocity analysis in R:</p>
+        <ol class="about-workflow">
+          <li><strong>Classify molecules.</strong> The upstream <code>plantvelo</code> Python module combines Cell Ranger alignments, cell barcodes, gene and repeat annotations, and a species-specific IR prior. Molecules are assigned to spliced, unspliced, retained or ambiguous categories.</li>
+          <li><strong>Correct the inputs.</strong> Retained and ambiguous molecules are excluded from kinetic inference. The remaining spliced and unspliced counts are exported in loom format. Retained counts are preserved separately for quality control and descriptive analyses.</li>
+          <li><strong>Infer cell-state dynamics.</strong> The PlantVelocity R package integrates these counts with a Seurat v5 object, smooths them over a neighbour graph and fits a two-state model of transcription, splicing and degradation. Gene-wise velocities are used to construct a directed velocity graph and transition probabilities.</li>
+        </ol>
+        <p>Outputs include velocity embeddings and stream plots, latent time, root and endpoint probabilities, gene phase portraits, and candidate driver-gene rankings. IR-associated statistics provide additional context across cells and genes without contributing to kinetic fitting.</p>
+      </section>
+
+      <section id="ir-priors">
+        <h2>IR priors across five plant species<a class="anchor" href="#ir-priors" aria-label="Link to IR priors across five plant species">¶</a></h2>
+        <p>The study integrated <strong>683 public long-read transcriptomic samples</strong> spanning Iso-Seq, FLEP-seq and Oxford Nanopore sequencing. Species-specific high-confidence IR priors were constructed for <em>Arabidopsis thaliana</em>, rice, tomato, maize and soybean, using each species’ own reference genome and annotation.</p>
+        <p>These priors provide structural evidence for input correction. They are not exhaustive catalogues of IR, and an event supported by external long-read data need not occur in every cell state of a target dataset. Application to another species requires an appropriate species-specific prior.</p>
+      </section>
+
+      <section id="applications">
+        <h2>Biological applications<a class="anchor" href="#applications" aria-label="Link to Biological applications">¶</a></h2>
+        <p>The study evaluated PlantVelocity in two Arabidopsis root time series:</p>
+        <ul>
+          <li><strong>Brassinolide response.</strong> IR-associated input filtering improved agreement between predicted directions, a cell-wall response programme and treatment chronology compared with an unfiltered baseline.</li>
+          <li><strong>Root-tip regeneration.</strong> Predicted directions suggested an early, transient shift towards lower-maturity states followed by renewed orientation towards maturation, with differences in timing and magnitude among lineages.</li>
+        </ul>
+      </section>
+
+      <section id="getting-started">
+        <h2>Getting started<a class="anchor" href="#getting-started" aria-label="Link to Getting started">¶</a></h2>
+        <p>Visit <a href="installation.html">Installation</a> to set up the PlantVelocity R package. The <a href="https://github.com/PlantVelocityProject/PlantVelocity#quick-start">repository quick start</a> introduces the R analysis workflow. Prior-guided molecular classification is provided by the separate <a href="https://github.com/PlantVelocityProject/plantvelo">plantvelo Python module</a>.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

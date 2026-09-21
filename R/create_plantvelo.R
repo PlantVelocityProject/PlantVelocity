@@ -212,7 +212,7 @@ create_plantvelo <- function(seurat_object,
       "Successfully created plantvelo object with spliced and unspliced layers."
     )
   }
-  message("Version: PlantVelocity v0.4.0\n",
+  message("Version: PlantVelocity v0.5.1\n",
           "Author: Jdluttzxr\n")
   return(plantvelo)
 }

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Prepare a Seurat object and a matching loom file for PlantVelocity RNA velocity analysis.">
+  <title>Data Preparation — PlantVelocity documentation</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="navigation.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <aside class="sidebar" aria-label="Documentation navigation">
+    <div class="brand">
+      <a href="index.html"><img class="brand-logo" src="assets/logo.png" alt="PlantVelocity" width="2172" height="724"></a>
+      <label class="sr-only" for="navigation-search">Search documentation pages</label>
+      <input id="navigation-search" type="search" placeholder="Search documentation…" aria-controls="documentation-nav" autocomplete="off" hidden>
+    </div>
+    <nav id="documentation-nav" aria-label="Documentation">
+      <div class="nav-group">
+        <p class="nav-label">OVERVIEW</p>
+        <a href="index.html">About PlantVelocity</a>
+        <a href="installation.html">Installation</a>
+        <a href="quick-start.html">Quick Start</a>
+        <a href="release-notes.html">Release Notes</a>
+        <a href="reference.html">Reference</a>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">USER GUIDE</p>
+        <a class="selected" aria-current="page" href="data-preparation.html">Data Preparation</a>
+        <a href="rna-velocity-analysis.html">RNA Velocity Analysis</a>
+        <a href="latent-time-terminal-states.html">Latent Time &amp; Terminal States</a>
+        <a href="driver-gene-ranking.html">Driver Gene Ranking</a>
+        <a href="intron-retention-analysis.html">Intron Retention Analysis</a>
+      </div>
+      <p class="search-status" role="status" aria-live="polite" hidden>No matching pages.</p>
+    </nav>
+  </aside>
+  <div class="page">
+    <header class="breadcrumbs"><span><a href="index.html">PlantVelocity</a><span aria-hidden="true"> / </span>Data Preparation</span><a class="source" href="https://github.com/PlantVelocityProject/PlantVelocity">View on GitHub ↗</a></header>
+    <main id="main" tabindex="-1">
+      <h1>Data Preparation</h1>
+      <p class="lead">Prepare a Seurat object and the corresponding loom file before starting RNA velocity analysis. PlantVelocity combines count layers from the loom file with cell annotations and dimensional reductions from Seurat.</p>
+
+      <section id="input-data">
+        <h2>Input data<a class="anchor" href="#input-data" aria-label="Link to Input data">¶</a></h2>
+        <p>You need two inputs:</p>
+        <ul>
+          <li>A Seurat v5 object containing the cells to analyse, an RNA assay and a PCA reduction. Include a UMAP reduction to follow the visualization example in Quick Start.</li>
+          <li>A corresponding loom file containing spliced and unspliced count layers.</li>
+        </ul>
+        <p>For IR-aware analysis, generate the loom file using the upstream <code>plantvelo</code> workflow with a species-specific IR prior, read alignments, cell barcodes, and gene and repeat annotations. Prior-based count correction takes place upstream, before importing the loom file into R.</p>
+      </section>
+
+      <section id="prepare-seurat">
+        <h2>Prepare the Seurat object<a class="anchor" href="#prepare-seurat" aria-label="Link to Prepare the Seurat object">¶</a></h2>
+        <p>Complete quality control and appropriate preprocessing in Seurat before import. Retain the RNA assay, cell annotations and dimensional reductions needed for downstream analysis.</p>
+        <div class="code-block"><span class="language">R</span><pre><code>library(Seurat)
+library(PlantVelocity)
+
+seob &lt;- readRDS("seurat_object.rds")</code></pre></div>
+        <p>Inspect the available assays, reductions and metadata:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>Assays(seob)
+Reductions(seob)
+head(seob[[]])</code></pre></div>
+        <p>The examples use the <code>RNA</code> assay, <code>pca</code> and <code>umap</code> reductions, and a metadata column named <code>cell_type</code> for colouring cells. Replace these names with those used in your own object where applicable. PCA is required for neighbour graph construction.</p>
+      </section>
+
+      <section id="prepare-loom">
+        <h2>Prepare the loom file<a class="anchor" href="#prepare-loom" aria-label="Link to Prepare the loom file">¶</a></h2>
+        <p>The loom file must contain:</p>
+        <ul>
+          <li><code>layers/spliced</code> — spliced counts.</li>
+          <li><code>layers/unspliced</code> — unspliced counts.</li>
+          <li><code>col_attrs/CellID</code> — cell identifiers.</li>
+          <li>A gene identifier field in <code>row_attrs</code>: <code>Gene</code> for Gene_symbol or <code>Accession</code> for Gene_ID, selected using <code>loom_gene_attr</code>.</li>
+        </ul>
+        <p>If <code>layers/retained</code> is present, PlantVelocity imports it as the <code>ir</code> layer for independent intron-retention analysis. This layer does not enter two-state kinetic fitting.</p>
+      </section>
+
+      <section id="match-identifiers">
+        <h2>Match cell and gene identifiers<a class="anchor" href="#match-identifiers" aria-label="Link to Match cell and gene identifiers">¶</a></h2>
+        <p>Cell names must match exactly between the Seurat object and <code>col_attrs/CellID</code>, including sample prefixes and barcode suffixes. The current importer requires cell names in both inputs to follow <code>{sample_name}_barcode-1</code>, for example <code>sample1_AAACCCAAGAAACACT-1</code>.</p>
+        <div class="code-block"><span class="language">R</span><pre><code>head(colnames(seob))
+head(rownames(seob))</code></pre></div>
+        <p>Select the gene identifier field that matches the Seurat feature names:</p>
+        <ul>
+          <li><code>loom_gene_attr = "Accession"</code> — construct the object using Gene_ID. Seurat feature names must match <code>row_attrs/Accession</code>.</li>
+          <li><code>loom_gene_attr = "Gene"</code> — construct the object using Gene_symbol. Seurat feature names must match <code>row_attrs/Gene</code>. This is the default.</li>
+        </ul>
+        <p>This parameter selects the matching field; it does not convert gene IDs to gene symbols or vice versa. All Seurat cell and feature names must be present in the corresponding loom fields. The loom file may contain additional cells and genes; imported count layers are selected and reordered to match the Seurat object.</p>
+      </section>
+
+      <section id="create-object">
+        <h2>Create the PlantVelocity object<a class="anchor" href="#create-object" aria-label="Link to Create the PlantVelocity object">¶</a></h2>
+        <p>For a Seurat object whose feature names are Gene_symbol, use <code>"Gene"</code>:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>pv &lt;- create_plantvelo(seurat_object = seob, assays = "RNA", loom_path = "plantvelo_output.loom", loom_gene_attr = "Gene")</code></pre></div>
+        <p>For a Seurat object whose feature names are Gene_ID, use <code>"Accession"</code> instead:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>pv &lt;- create_plantvelo(seurat_object = seob, assays = "RNA", loom_path = "plantvelo_output.loom", loom_gene_attr = "Accession")</code></pre></div>
+        <p>To set the active cell identities from a metadata column, also supply <code>input_ident</code>. For example, when using Gene_symbol:</p>
+        <div class="code-block"><span class="language">R</span><pre><code>pv &lt;- create_plantvelo(seurat_object = seob, assays = "RNA", loom_path = "plantvelo_output.loom", loom_gene_attr = "Gene", input_ident = "cell_type")</code></pre></div>
+        <p>Replace <code>"cell_type"</code> with an existing metadata column. If <code>input_ident</code> is omitted, the existing Seurat identities are retained.</p>
+      </section>
+
+      <section id="continue-analysis">
+        <h2>Continue to RNA velocity analysis<a class="anchor" href="#continue-analysis" aria-label="Link to Continue to RNA velocity analysis">¶</a></h2>
+        <p>The resulting <code>plantvelo</code> object contains aligned count layers, cell metadata and dimensional reductions. Continue with <a href="rna-velocity-analysis.html">RNA Velocity Analysis</a> to construct the neighbour graph and fit RNA velocity.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

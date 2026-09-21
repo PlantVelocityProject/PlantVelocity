@@ -11,7 +11,7 @@ compute_velocity_stream(
   n_grid = 50L,
   n_neighbors = NULL,
   smooth = 0.5,
-  min_mass = 1,
+  min_mass = 0.5,
   cutoff_perc = 5,
   x_pad = 0.01,
   y_pad = 0.01,

@@ -675,7 +675,7 @@ plot_ir_cell_landscape <- function(pv,
     raster_dpi = raster_dpi,
     input_color = input_color
   )
-  .combine_ir_panels(panels, ncol = 3)
+  .combine_ir_panels(panels, ncol = 1)
 }
 
 # =============================================================================
