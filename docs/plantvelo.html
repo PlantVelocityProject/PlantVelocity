@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>plantvelo — PlantVelocity documentation</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="navigation.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <aside class="sidebar" aria-label="Documentation navigation">
+    <div class="brand">
+      <a href="index.html"><img class="brand-logo" src="assets/logo.png" alt="PlantVelocity" width="2172" height="724"></a>
+      <label class="sr-only" for="navigation-search">Search documentation pages</label>
+      <input id="navigation-search" type="search" placeholder="Search documentation…" aria-controls="documentation-nav" autocomplete="off" hidden>
+    </div>
+    <nav id="documentation-nav" aria-label="Documentation">
+      <div class="nav-group">
+        <p class="nav-label">OVERVIEW</p>
+        <a href="index.html">About PlantVelocity</a>
+        <a href="installation.html">Installation</a>
+        <a href="quick-start.html">Quick Start</a>
+        <a href="release-notes.html">Release Notes</a>
+        <a href="reference.html">Reference</a>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">USER GUIDE</p>
+        <a href="data-preparation.html">Data Preparation</a>
+        <a href="rna-velocity-analysis.html">RNA Velocity Analysis</a>
+        <a href="latent-time-terminal-states.html">Latent Time &amp; Terminal States</a>
+        <a href="driver-gene-ranking.html">Driver Gene Ranking</a>
+        <a href="intron-retention-analysis.html">Intron Retention Analysis</a>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">RESOURCES</p>
+        <a class="selected" aria-current="page" href="plantvelo.html">plantvelo</a>
+        <a href="ir-prior-resources.html">IR Prior Resources</a>
+      </div>
+      <p class="search-status" role="status" aria-live="polite" hidden>No matching pages.</p>
+    </nav>
+  </aside>
+  <div class="page">
+    <header class="breadcrumbs"><span><a href="index.html">PlantVelocity</a><span aria-hidden="true"> / </span>plantvelo</span><a class="source" href="https://github.com/PlantVelocityProject/PlantVelocity">View on GitHub ↗</a></header>
+    <main id="main" tabindex="-1">
+      <h1>plantvelo</h1>
+      <p class="lead">Prepare IR-aware count layers for plant RNA velocity analysis with the upstream plantvelo Python module.</p>
+      <p><a href="https://github.com/PlantVelocityProject/plantvelo">GitHub repository ↗</a></p>
+      <section id="overview">
+        <h2>How plantvelo fits into the workflow<a class="anchor" href="#overview" aria-label="Link to How plantvelo fits into the workflow">¶</a></h2>
+        <p>plantvelo performs prior-guided molecular classification upstream of the PlantVelocity R package. It uses intron-retention priors to distinguish IR-associated signals when preparing spliced and unspliced count layers for downstream analysis.</p>
+        <p>The resulting loom file connects the upstream processing workflow to PlantVelocity, where count layers are combined with Seurat cell annotations and dimensional reductions.</p>
+      </section>
+      <section id="prepare-inputs">
+        <h2>Prepare the inputs<a class="anchor" href="#prepare-inputs" aria-label="Link to Prepare the inputs">¶</a></h2>
+        <p>Prepare the following resources for upstream processing, checking the required formats against the repository instructions:</p>
+        <ul>
+          <li>Read alignments and cell barcodes for the single-cell dataset.</li>
+          <li>Gene and repeat annotations compatible with the reference genome used for alignment.</li>
+          <li>An IR prior matching the species and reference annotation.</li>
+        </ul>
+        <p>Keep reference versions and gene identifiers consistent across these inputs and the Seurat object used downstream.</p>
+      </section>
+      <section id="loom-output">
+        <h2>Use the loom output<a class="anchor" href="#loom-output" aria-label="Link to Use the loom output">¶</a></h2>
+        <p>PlantVelocity reads the following count layers from the loom file:</p>
+        <ul>
+          <li><code>layers/spliced</code> — spliced counts for velocity analysis.</li>
+          <li><code>layers/unspliced</code> — unspliced counts for velocity analysis.</li>
+          <li><code>layers/retained</code> — optional IR-associated counts, imported as the separate <code>ir</code> layer.</li>
+        </ul>
+        <p>Cell identifiers and the selected gene identifier field must match the Seurat object. Choose <code>loom_gene_attr = "Accession"</code> for Gene_ID or <code>loom_gene_attr = "Gene"</code> for Gene_symbol.</p>
+        <p>IR-associated counts remain separate from the two-state kinetic model and can be explored through <a href="intron-retention-analysis.html">Intron Retention Analysis</a>.</p>
+      </section>
+      <section id="next-steps">
+        <h2>Continue to Data Preparation<a class="anchor" href="#next-steps" aria-label="Link to Continue to Data Preparation">¶</a></h2>
+        <p>Once the loom file is ready, continue with <a href="data-preparation.html">Data Preparation</a> to align the inputs and create a <code>plantvelo</code> object in R.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

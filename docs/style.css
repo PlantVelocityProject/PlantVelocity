@@ -1,5 +1,22 @@
 :root { color-scheme: light; --green: #26735d; --ink: #343b3e; --muted: #63716d; --line: #e1e7e4; }
 * { box-sizing: border-box; }
+.prior-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 20px; margin: 28px 0; }
+.prior-card { grid-column: span 2; min-width: 0; display: flex; flex-direction: column; text-align: center; padding: 16px; border: 1px solid #e4ebf3; border-radius: 14px; background: #fff; }
+.prior-card:nth-child(4) { grid-column: 2 / span 2; }
+.prior-image { display: block; border-radius: 8px; }
+.prior-image img { display: block; width: 100%; height: 180px; object-fit: contain; }
+.prior-card h3 { margin: 12px 0 14px; font-size: 18px; font-weight: 700; }
+.prior-assembly { margin: 0 0 14px; font-size: 15px; line-height: 21px; overflow-wrap: anywhere; color: #526780; }
+.prior-card dl { margin: auto 0 16px; font-size: 15px; line-height: 22px; }
+.prior-card dl div { display: flex; justify-content: space-between; gap: 8px; text-align: left; }
+.prior-card dd { margin: 0; font-weight: 650; color: #1b58a1; }
+.prior-download { display: block; padding: 10px 8px; border-radius: 8px; background: #1b58a1; color: #fff; font-size: 16px; line-height: 22px; }
+.prior-download:hover { background: #174b89; text-decoration: none; }
+.prior-references { font-size: 14px; line-height: 23px; }
+.prior-references caption { font-size: 18px; line-height: 30px; }
+.prior-references th, .prior-references td { overflow-wrap: anywhere; }
+@media (max-width: 1100px) { .prior-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .prior-card, .prior-card:nth-child(4) { grid-column: auto; } }
+@media (max-width: 560px) { .prior-grid { grid-template-columns: minmax(0, 1fr); } .prior-image img { height: 220px; } }
 [hidden] { display: none !important; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 html { scroll-behavior: smooth; scroll-padding-top: 24px; }
@@ -87,7 +104,7 @@ body { background: #f5f8fc; }
 .sidebar { inset: 16px auto 16px 16px; width: 253px; border: 1px solid #e4ebf3; border-radius: 20px; box-shadow: 0 8px 28px rgba(9, 9, 17, 0.06); background: #fff; color: #526780; }
 .brand { background: #fff; border-bottom: 1px solid #edf1f6; }
 .brand a { color: #1b58a1; }
-.brand-logo { display: block; width: 100%; max-width: 240px; height: auto; margin: 0 auto; }
+.brand-logo { display: block; width: 100%; max-width: 240px; height: auto; margin: 0 auto; transform: scale(1.2); transform-origin: center; }
 #navigation-search { background: #f5f8fc; border-color: #bcd7f5; color: #090911; }
 #navigation-search::placeholder { color: #526780; }
 a:focus-visible, #navigation-search:focus-visible { outline-color: #91aecf; }

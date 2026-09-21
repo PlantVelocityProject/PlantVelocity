@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IR Prior Resources — PlantVelocity documentation</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="navigation.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <aside class="sidebar" aria-label="Documentation navigation">
+    <div class="brand">
+      <a href="index.html"><img class="brand-logo" src="assets/logo.png" alt="PlantVelocity" width="2172" height="724"></a>
+      <label class="sr-only" for="navigation-search">Search documentation pages</label>
+      <input id="navigation-search" type="search" placeholder="Search documentation…" aria-controls="documentation-nav" autocomplete="off" hidden>
+    </div>
+    <nav id="documentation-nav" aria-label="Documentation">
+      <div class="nav-group">
+        <p class="nav-label">OVERVIEW</p>
+        <a href="index.html">About PlantVelocity</a>
+        <a href="installation.html">Installation</a>
+        <a href="quick-start.html">Quick Start</a>
+        <a href="release-notes.html">Release Notes</a>
+        <a href="reference.html">Reference</a>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">USER GUIDE</p>
+        <a href="data-preparation.html">Data Preparation</a>
+        <a href="rna-velocity-analysis.html">RNA Velocity Analysis</a>
+        <a href="latent-time-terminal-states.html">Latent Time &amp; Terminal States</a>
+        <a href="driver-gene-ranking.html">Driver Gene Ranking</a>
+        <a href="intron-retention-analysis.html">Intron Retention Analysis</a>
+      </div>
+      <div class="nav-group">
+        <p class="nav-label">RESOURCES</p>
+        <a href="plantvelo.html">plantvelo</a>
+        <a class="selected" aria-current="page" href="ir-prior-resources.html">IR Prior Resources</a>
+      </div>
+      <p class="search-status" role="status" aria-live="polite" hidden>No matching pages.</p>
+    </nav>
+  </aside>
+  <div class="page">
+    <header class="breadcrumbs"><span><a href="index.html">PlantVelocity</a><span aria-hidden="true"> / </span>IR Prior Resources</span><a class="source" href="https://github.com/PlantVelocityProject/PlantVelocity">View on GitHub ↗</a></header>
+    <main id="main" tabindex="-1">
+      <h1>IR Prior Resources</h1>
+      <p class="lead">Species-specific high-confidence intron-retention (IR) priors for upstream processing with <a href="plantvelo.html">plantvelo</a>.</p>
+      <div class="prior-grid">
+        <article class="prior-card">
+          <div class="prior-image"><img src="assets/ath.png" alt="Arabidopsis plant illustration" width="1254" height="1254" loading="lazy"></div>
+          <h3><i>Arabidopsis thaliana</i></h3>
+          <p class="prior-assembly">TAIR10 · Araport11</p>
+          <dl><div><dt>Samples</dt><dd>146</dd></div><div><dt>High-confidence IR</dt><dd>2,256</dd></div></dl>
+          <a class="prior-download" href="downloads/ath.IR.csv" download="ath.IR.csv">Download High-confidence IR ↓</a>
+        </article>
+        <article class="prior-card">
+          <div class="prior-image"><img src="assets/osa.png" alt="Rice plant illustration" width="1254" height="1254" loading="lazy"></div>
+          <h3><i>Oryza sativa Japonica</i></h3>
+          <p class="prior-assembly">IRGSP-1.0 · RAP-DB</p>
+          <dl><div><dt>Samples</dt><dd>248</dd></div><div><dt>High-confidence IR</dt><dd>1,470</dd></div></dl>
+          <a class="prior-download" href="downloads/osa.IR.csv" download="osa.IR.csv">Download High-confidence IR ↓</a>
+        </article>
+        <article class="prior-card">
+          <div class="prior-image"><img src="assets/sly.png" alt="Tomato plant illustration" width="1254" height="1254" loading="lazy"></div>
+          <h3><i>Solanum lycopersicum</i></h3>
+          <p class="prior-assembly">SL4.0 · ITAG4.0</p>
+          <dl><div><dt>Samples</dt><dd>53</dd></div><div><dt>High-confidence IR</dt><dd>1,330</dd></div></dl>
+          <a class="prior-download" href="downloads/sly.IR.csv" download="sly.IR.csv">Download High-confidence IR ↓</a>
+        </article>
+        <article class="prior-card">
+          <div class="prior-image"><img src="assets/zma.png" alt="Maize plant illustration" width="1254" height="1254" loading="lazy"></div>
+          <h3><i>Zea mays</i></h3>
+          <p class="prior-assembly">Zm-B73-REFERENCE-NAM-5.0 · Zm00001eb.1</p>
+          <dl><div><dt>Samples</dt><dd>175</dd></div><div><dt>High-confidence IR</dt><dd>1,782</dd></div></dl>
+          <a class="prior-download" href="downloads/zma.IR.csv" download="zma.IR.csv">Download High-confidence IR ↓</a>
+        </article>
+        <article class="prior-card">
+          <div class="prior-image"><img src="assets/gmx.png" alt="Soybean plant illustration" width="1254" height="1254" loading="lazy"></div>
+          <h3><i>Glycine max</i></h3>
+          <p class="prior-assembly">Glycine_max_v2.1 · Wm82.a2.v1</p>
+          <dl><div><dt>Samples</dt><dd>61</dd></div><div><dt>High-confidence IR</dt><dd>2,097</dd></div></dl>
+          <a class="prior-download" href="downloads/gmx.IR.csv" download="gmx.IR.csv">Download High-confidence IR ↓</a>
+        </article>
+      </div>
+      <section id="reference-genomes">
+        <h2>Reference genomes and annotations<a class="anchor" href="#reference-genomes" aria-label="Link to Reference genomes and annotations">¶</a></h2>
+        <div class="table-scroll"><table class="prior-references">
+          <caption>Reference resources used in this study. All annotations are from Ensembl Plants release 63.</caption>
+          <thead><tr><th scope="col">Species</th><th scope="col">Assembly</th><th scope="col">Assembly accession</th><th scope="col">Annotation</th></tr></thead>
+          <tbody>
+            <tr><th scope="row"><i>Arabidopsis thaliana</i></th><td>TAIR10</td><td>GCA_000001735.1</td><td>Araport11</td></tr>
+            <tr><th scope="row"><i>Oryza sativa Japonica</i></th><td>IRGSP-1.0</td><td>GCA_001433935.1</td><td>RAP-DB</td></tr>
+            <tr><th scope="row"><i>Solanum lycopersicum</i></th><td>SL4.0</td><td>GCA_000188115.5</td><td>ITAG4.0</td></tr>
+            <tr><th scope="row"><i>Zea mays</i></th><td>Zm-B73-REFERENCE-NAM-5.0</td><td>GCA_902167145.1</td><td>Zm00001eb.1</td></tr>
+            <tr><th scope="row"><i>Glycine max</i></th><td>Glycine_max_v2.1</td><td>GCA_000004515.4</td><td>Wm82.a2.v1</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+      <section id="file-contents">
+        <h2>File contents<a class="anchor" href="#file-contents" aria-label="Link to File contents">¶</a></h2>
+        <p>Each download contains only high-confidence IR records for the selected species, with <code>IR_class</code> set to <code>high_confidence_IR</code>. </p>
+        <ul>
+          <li><strong>Identifiers and locations:</strong> <code>gene_id</code>, <code>intron_id</code>, <code>intron_uid</code>, <code>chromosome</code>, <code>start</code>, <code>end</code> and <code>strand</code>.</li>
+          <li><strong>Annotation support:</strong> <code>supporting_transcripts</code>, <code>anchor_count</code> and <code>exon_overlap_warning</code>.</li>
+          <li><strong>Evidence counts:</strong> <code>N_retained</code>, <code>N_spliced</code>, <code>N_specific</code> and <code>N_informative</code>.</li>
+          <li><strong>IR metrics and classification:</strong> <code>IR_ratio</code>, <code>IR_specificity</code>, <code>species</code> and <code>IR_class</code>.</li>
+        </ul>
+        <p>Preserve the identifiers and coordinate fields when preparing inputs. Use the high-confidence IR resource matching your species, reference assembly and annotation, and refer to the upstream tool instructions for the expected input format.</p>
+      </section>
+      <section id="use-priors">
+        <h2>Use with plantvelo<a class="anchor" href="#use-priors" aria-label="Link to Use with plantvelo">¶</a></h2>
+        <p>Visit <a href="plantvelo.html">plantvelo</a> for the upstream processing workflow. After generating the loom file, continue with <a href="data-preparation.html">Data Preparation</a> to import the count layers into PlantVelocity.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
