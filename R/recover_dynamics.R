@@ -1722,7 +1722,7 @@ recover_dynamics <- function(pv,
   row_index <- align_axis(rownames(layer), source_row_names, "row")
   col_index <- align_axis(colnames(layer), source_col_names, "column")
   layer <- layer[row_index, col_index, drop = FALSE]
-  if (identical(source_orientation, "genes_by_cells")) layer <- t(layer)
+  if (identical(source_orientation, "genes_by_cells")) layer <- Matrix::t(layer)
   dimnames(layer) <- list(cell_ids, gene_names)
   layer
 }
