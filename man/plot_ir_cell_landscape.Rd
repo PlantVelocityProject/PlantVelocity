@@ -12,7 +12,7 @@ plot_ir_cell_landscape(
   alpha = 0.9,
   raster_points = FALSE,
   raster_dpi = 1200,
-  input_color = c("#EDF3F7", "#C9DCE8", "#91B8CF", "#578DAE", "#234F6D")
+  input_color = c("#46588C","#3FA59B","#E6D998","#DF8666","#9F3E55")
 )
 }
 \arguments{

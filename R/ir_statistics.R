@@ -546,11 +546,11 @@ plot_ir_qc <- function(pv, ir_stats, label_top = 5L) {
                                   raster_points = FALSE,
                                   raster_dpi = 1200,
                                   input_color = c(
-                                    "#EDF3F7",
-                                    "#C9DCE8",
-                                    "#91B8CF",
-                                    "#578DAE",
-                                    "#234F6D"
+                                    "#46588C",
+                                    "#3FA59B",
+                                    "#E6D998",
+                                    "#DF8666",
+                                    "#9F3E55"
                                   )) {
   .require_ir_ggplot2()
   if (!is.logical(raster_points) || length(raster_points) != 1L ||
@@ -659,11 +659,11 @@ plot_ir_cell_landscape <- function(pv,
                                    raster_points = FALSE,
                                    raster_dpi = 1200,
                                    input_color = c(
-                                     "#EDF3F7",
-                                     "#C9DCE8",
-                                     "#91B8CF",
-                                     "#578DAE",
-                                     "#234F6D"
+                                     "#46588C",
+                                     "#3FA59B",
+                                     "#E6D998",
+                                     "#DF8666",
+                                     "#9F3E55"
                                    )) {
   panels <- .build_ir_cell_panels(
     pv,
