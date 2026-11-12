@@ -1,0 +1,8 @@
+{% extends "!breadcrumbs.html" %}
+
+{% block breadcrumbs %}
+  {% for doc in parents %}
+    <li class="breadcrumb-item"><a href="{{ doc.link|e }}">{{ doc.title }}</a></li>
+  {% endfor %}
+  <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+{% endblock %}

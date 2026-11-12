@@ -1,0 +1,47 @@
+# R session files
+.Rhistory
+.RData
+.Ruserdata
+.Renviron
+
+# RStudio project state
+.Rproj.user/
+
+# R package build and check output
+*.Rcheck/
+/*.tar.gz
+/*.zip
+
+# Sphinx build output
+/docs/_build/
+
+# Editors and IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Operating-system metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Temporary and backup files
+*.tmp
+*.temp
+*.bak
+
+# Local agent output and isolated workspaces
+.agents/
+.codex/
+.worktrees/
+
+# tests file
+tests/testthat/Rplots.pdf
+.tests/
+
+
+
+
+
