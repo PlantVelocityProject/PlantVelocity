@@ -37,10 +37,6 @@ if (!requireNamespace("remotes", quietly = TRUE)) {
 remotes::install_github("PlantVelocityProject/PlantVelocity")
 ```
 
-Required dependencies declared by PlantVelocity are installed automatically by
-the installer. Optional features may require additional packages listed under
-`Suggests` in `DESCRIPTION`.
-
 ## Quick start
 
 The following example shows the main analysis path. See the package help topics
@@ -64,7 +60,7 @@ plot_velocity_embedding_grid(pv, reduction = "umap", group_by = "cell_type")
 
 ## Support
 
-See the [DOCUMENTATION](https://PlantVelocityProject.github.io/PlantVelocity/) for help getting started.
+See the [DOCUMENTATION](https://plantvelocity.readthedocs.io/en/latest/) for help getting started.
 Please report bugs, unexpected behavior, and feature requests through [GitHub Issues](https://github.com/PlantVelocityProject/PlantVelocity/issues).
 
 ## Citation
