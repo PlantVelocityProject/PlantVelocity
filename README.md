@@ -61,7 +61,7 @@ plot_velocity_embedding_grid(pv, reduction = "umap", group_by = "cell_type")
 ## Support
 
 See the [DOCUMENTATION](https://plantvelocity.readthedocs.io/en/latest/) for help getting started.
-Please report bugs, unexpected behavior, and feature requests through [GitHub Issues](https://github.com/PlantVelocityProject/PlantVelocity/issues).
+Please report bugs, unexpected behavior, and feature requests through [GitHub Issues](https://github.com/PlantVelocityProject/PlantVelocity/issues), or contact jdluttzxr@stu.xmu.edu.cn.
 
 ## Citation
 
