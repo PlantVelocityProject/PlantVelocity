@@ -65,4 +65,5 @@ intron-retention-analysis
 :hidden:
 
 plantvelo
+plantirprior
 ```

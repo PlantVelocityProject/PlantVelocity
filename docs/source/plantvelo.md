@@ -16,7 +16,7 @@ Prepare the following resources for upstream processing, checking the required f
 
 - Read alignments and cell barcodes for the single-cell dataset.
 - Gene and repeat annotations compatible with the reference genome used for alignment.
-- An IR prior matching the species and reference annotation.
+- An IR prior matching the species and reference annotation, available from [PlantIRPrior](plantirprior.md).
 
 Keep reference versions and gene identifiers consistent across these inputs and the Seurat object used downstream.
 

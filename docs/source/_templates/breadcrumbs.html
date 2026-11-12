@@ -6,3 +6,9 @@
   {% endfor %}
   <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
 {% endblock %}
+
+{% block breadcrumbs_aside %}
+  <li class="wy-breadcrumbs-aside">
+    <a href="{{ github_repository_url|e }}">{{ _('View on GitHub') }}</a>
+  </li>
+{% endblock %}

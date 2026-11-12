@@ -4,6 +4,9 @@ language = "en"
 extensions = ["myst_parser", "sphinx_rtd_theme"]
 html_theme = "sphinx_rtd_theme"
 html_theme_options = {"titles_only": True, "logo_only": True}
+html_context = {
+    "github_repository_url": "https://github.com/PlantVelocityProject/PlantVelocity",
+}
 html_logo = "../../man/figures/logo.png"
 templates_path = ["_templates"]
 html_static_path = ["_static"]
