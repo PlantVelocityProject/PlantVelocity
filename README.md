@@ -1,7 +1,7 @@
 # PlantVelocity - Plant RNA velocity analysis with long-read intron-retention priors
 
 <p align="center">
-  <img src="./man/figures/logo.png" width="750">
+  <img src="./docs/source/figures/logo.png" width="750">
 </p>
 
 PlantVelocity is an R package for estimating and visualizing RNA velocity in
@@ -12,7 +12,7 @@ Intron-retention (IR) signals can be analyzed independently as a post-hoc
 feature, but are excluded from kinetic fitting and velocity inference.
 
 <p align="center">
-  <img src="./man/figures/workflow.png" width="750">
+  <img src="./docs/source/figures/workflow.png" width="750">
 </p>
 
 ## Key applications
